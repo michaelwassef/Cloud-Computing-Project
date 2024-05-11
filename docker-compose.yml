@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: sql-server-container
+    environment:
+      SA_PASSWORD: "M%#@B8Emym7YhBjQ"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - dbdata:/var/opt/mssql
+      - ./backupDB:/var/opt/mssql/backup
+    networks:
+      - app-network
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webapp-container
+    ports:
+      - "80:80"
+    depends_on:
+      - sql-server
+    networks:
+      - app-network
+
+volumes:
+  dbdata:
+
+networks:
+  app-network:
